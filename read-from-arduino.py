@@ -3,14 +3,14 @@ import time as time
 import sys
 from datetime import datetime
 from datetime import timedelta 
-ser = serial.Serial('/dev/ttyACM0', 9600)
+ser = serial.Serial('/dev/ttyACM1', 9600)
 now = datetime.now()
 
 file_name = 'plant-reading-{0}.txt'.format(now.strftime('%Y-%m-%d %H:%M:%S'))
 
 file = open(file_name,"w")
 
-future_date = now + timedelta(hours=1)
+future_date = now + timedelta(hours=12)
 
 while (datetime.now() < future_date):
     try:
@@ -24,6 +24,7 @@ while (datetime.now() < future_date):
     except:
         print(sys.exc_info()[0])
         file.close()
+        raise
         
 
 file.close()

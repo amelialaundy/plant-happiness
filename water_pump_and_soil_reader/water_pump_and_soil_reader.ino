@@ -1,11 +1,12 @@
 //Constants 
-const int motorPin = 3;
+const int motorPin = 3; 
 const int hygrometer = A0;  //Hygrometer sensor analog pin output at pin A0 of Arduino
 const int noWaterSpeed = 0;
 const int waterSpeed = 10;
 const bool debug = true;
-const unsigned long default_delay = 1200000; //60000 * 20; //20 minutes
+const unsigned long default_delay = 30000;//1200000; //60000 * 20; //20 minutes
 const int wet = 40;
+const int minimum_raw_value = 200;
 const int dry = 1000;
 const int hundred_percent = 100;
 const int zero_percent = 0;
@@ -19,19 +20,19 @@ void setup() {
 } 
  
 void loop() { 
-  int soilHumidity = readSoilHumidityPercentage();
-  bool shouldWaterPlant = soilHumidity <= 50;
+  int rawValue = readSoilHumidity();
+  bool shouldWaterPlant = rawValue >= minimum_raw_value;
   shouldWaterPlant ?  waterPlant() : turnPumpOff();
   Serial.print(default_delay);
   delay(default_delay); //Read every 20 mins ater watering or turning off pump
 } 
 
-int readSoilHumidityPercentage() {
+int readSoilHumidity() {
   int rawValue = analogRead(hygrometer);   //Read analog value 
   int constrainedValue = constrain(rawValue,wet,dry); //constrain values to within the wettest value and driest value
   int humidityPercent =  map(constrainedValue, wet, dry, hundred_percent, zero_percent);  //Map value : wet will be 100 and dry will be 0
   logSoilHumidity(rawValue, constrainedValue, humidityPercent);
-  return humidityPercent;
+  return rawValue;
 }
 
 void waterPlant() {
